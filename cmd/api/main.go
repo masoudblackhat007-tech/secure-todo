@@ -6,6 +6,8 @@ import (
 )
 
 func healthHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("health check requested") // تغییر کوچک برای commit
+
 	if r.Method != http.MethodGet {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 		return
@@ -16,7 +18,6 @@ func healthHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := w.Write([]byte(`{"status":"ok"}`))
 	if err != nil {
-		// در همین مرحله لاگ ساده کافی است
 		log.Printf("write response error: %v", err)
 	}
 }
