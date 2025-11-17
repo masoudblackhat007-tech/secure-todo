@@ -1,14 +1,29 @@
-# IDE configs
-.idea/
-.vscode/
+# Go build
+/bin/
+/dist/
+/build/
+/coverage/
+/tmp/
 
-# binaries
-bin/
-*.exe
-
-# logs
+# Logs
 *.log
+logs/
 
-# env/config
+# Env files
 .env
 .env.*
+*.env
+
+# Dumps / DB backups
+*.sql
+*.dump
+dump/
+dumps/
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+
+# Vendor (if used)
+vendor/
