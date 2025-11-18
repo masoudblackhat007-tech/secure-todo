@@ -1,0 +1,33 @@
+# ==============================
+# Stage 1: Build
+# ==============================
+FROM golang:1.25-alpine AS builder
+
+RUN apk add --no-cache ca-certificates
+
+WORKDIR /app
+
+# فقط ماژول برای کش بهتر
+COPY go.mod ./
+
+# اینجا داخل کانتینر dependency ها رو resolve می‌کنیم
+RUN go mod tidy
+
+# بقیه سورس
+COPY . .
+
+# باینری استاتیک برای لینوکس
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -ldflags="-s -w" -o secure-todo ./cmd/api
+FROM alpine:3.20
+
+RUN apk add --no-cache ca-certificates
+RUN adduser -D -g '' appuser
+
+WORKDIR /app
+COPY --from=builder /app/secure-todo /app/secure-todo
+
+EXPOSE 8081
+USER appuser
+
+ENTRYPOINT ["/app/secure-todo"]

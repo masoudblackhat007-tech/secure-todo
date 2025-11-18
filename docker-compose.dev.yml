@@ -22,6 +22,22 @@ services:
     networks:
       - internal
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    env_file:
+      - .env.dev
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - internal
+    # فقط API را برای توسعه به host publish می‌کنیم
+    ports:
+      - "8081:8081"
+
 networks:
   internal:
     driver: bridge
