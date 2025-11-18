@@ -1,287 +1,211 @@
-باشه. آماده شو برای یک README که **کامل، تمیز، حرفه‌ای، Production-Grade، امنیت‌محور، قابل ارائه در GitHub** و بدون هیچ‌گونه نقص معماری باشد.
-این README دقیقاً استانداردهای پروژه‌های شرکت‌های بزرگ (Uber، GitLab، HashiCorp، GoTeam) را رعایت می‌کند.
-
----
-
-# ✅ **README.md نهایی، کامل و اصلاح‌شده برای پروژه secure-todo**
-
-(شامل: ساختار، env کامل، API Reference، Network Diagram، Security Policies، Workflow، Badges و Markdown استاندارد)
-
----
-
-```md
 # secure-todo
 
-![Go Version](https://img.shields.io/badge/Go-1.22-blue)
-![Docker](https://img.shields.io/badge/Docker-Enabled-blue)
-![Security](https://img.shields.io/badge/Security-Hardening-red)
-![Status](https://img.shields.io/badge/Status-Development-yellow)
-![License](https://img.shields.io/badge/License-MIT-green)
+[![Go Version](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go\&logoColor=white)](https://go.dev)
+[![WSL2](https://img.shields.io/badge/WSL2-Ubuntu%2022.04-orange?logo=ubuntu\&logoColor=white)](https://learn.microsoft.com/en-us/windows/wsl/)
+[![Docker](https://img.shields.io/badge/Docker-Required-2496ED?logo=docker\&logoColor=white)](https://www.docker.com/)
+[![Security-Focused](https://img.shields.io/badge/Secure%20By%20Design-Yes-success)](#)
 
-یک پروژه آموزشی برای ساخت یک **TODO API کاملاً امن** با زبان **Go**، معماری Clean، و استک Dockerized.
-تمرکز پروژه بر **امنیت، معماری لایه‌ای، مدیریت صحیح Secretها، ورودی سخت‌گیرانه، Rate-limiting، Logging استاندارد، Dependency Scanning و Deployment امن** است.
+A fully security-focused TODO application built in Go with PostgreSQL, Docker, and a hardened development workflow under WSL2.
 
 ---
 
-# 📦 پیش‌نیازها (فقط داخل WSL)
+## Features
 
-> ⚠️ **هیچ‌چیزی روی ویندوز اجرا نمی‌شود.**
-> تمام Build، Run، Migration، Docker و ابزارها فقط داخل WSL.
-
-- WSL2 + Ubuntu
-- Go 1.22+
-- Docker & Docker Compose v2
-- PostgreSQL Client (`psql`)
-- Redis CLI (`redis-cli`)
-- ابزارهای امنیتی:
-  - `trivy`
-  - `govulncheck`
-  - `golangci-lint`
+* 🔐 **Security-first architecture**
+* 🐳 **Dockerized development** (PostgreSQL, Redis, App)
+* 🏗 **Clean folder structure (internal/***)**
+* 🧪 **Health-check endpoints**
+* 🧵 **Strict GitFlow branching**
+* 📦 **Makefile automation**
+* 🔎 **WSL2-only development** (no Windows binaries)
 
 ---
 
-# 🧩 ساختار پروژه (معماری پاک)
+## Requirements
+
+* **WSL2 Ubuntu 22.04**
+* **Docker Engine (WSL2 backend)**
+* **docker-compose**
+* **Go 1.22+**
+
+---
+
+## Project Structure
 
 ```
-
 secure-todo/
-│
-├── cmd/api/               # Entry point اصلی
-│    └── main.go
-│
-├── internal/
-│    ├── config/           # مدیریت env، پیکربندی، ولیدیشن
-│    ├── database/         # اتصال Postgres (GORM)
-│    ├── cache/            # Redis Client + Cache Layer
-│    ├── todo/             # Domain (entity, repository, service)
-│    ├── middleware/       # امنیت، Rate-limit، Logging، Auth
-│    ├── routes/           # تعریف مسیرها
-│    ├── server/           # HTTP Server و bootstrap
-│    └── logger/           # Logger استاندارد با ساختار
-│
-├── pkg/                   # ابزارهای اشتراکی (در صورت نیاز)
-│
-├── Dockerfile             # Build نهایی Production
-├── Dockerfile.dev         # Build توسعه‌ای
-├── docker-compose.dev.yml # دیتابیس، Redis، API برای توسعه
-│
-├── .env.dev               # env مخصوص محیط dev
-├── go.mod
-├── go.sum
-└── README.md
-
-````
+│── cmd/
+│── internal/
+│   ├── api/
+│   ├── config/
+│   ├── core/
+│   ├── database/
+│   ├── handlers/
+│   ├── listener/
+│   ├── logger/
+│   ├── models/
+│   ├── repository/
+│   ├── services/
+│   ├── usecases/
+│── deployments/
+│── Dockerfile
+│── docker-compose.yml
+│── Makefile
+│── .env.example
+│── README.md
+```
 
 ---
 
-# 🔐 فایل ENV کامل (`.env.dev`)
+## Environment Variables
 
-```env
-# Application
-APP_ENV=development
-APP_PORT=8081
-APP_DEBUG=true
-
-# PostgreSQL
-POSTGRES_USER=securetodo
-POSTGRES_PASSWORD=securetodo
-POSTGRES_DB=securetodo
-POSTGRES_HOST=secure-todo-postgres
-POSTGRES_PORT=5432
-POSTGRES_SSLMODE=disable
-
-# Redis
-REDIS_HOST=secure-todo-redis
-REDIS_PORT=6379
-REDIS_PASSWORD=
-
-# Security
-RATE_LIMIT=50
-JWT_SECRET=your_very_strong_secret_key_here
-JWT_EXPIRE_MINUTES=60
-````
-
----
-
-# 🚀 راه‌اندازی محیط توسعه
-
-## ۱) اجرای سرویس‌ها
+Copy:
 
 ```bash
-docker compose -f docker-compose.dev.yml up -d --build
+cp .env.example .env
 ```
 
-## ۲) چک کردن وضعیت سرویس‌ها
+`.env` contains:
+
+```
+APP_PORT=8080
+DATABASE_URL=postgres://postgres:postgres@db:5432/secure_todo?sslmode=disable
+REDIS_ADDR=redis:6379
+```
+
+---
+
+## Running in Docker
+
+### Build + Up (app + db + redis)
 
 ```bash
-docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+docker compose up --build
 ```
 
-## ۳) مشاهده لاگ لایو API
+### Detached mode
 
 ```bash
-docker compose -f docker-compose.dev.yml logs -f api
+docker compose up -d --build
 ```
 
-## ۴) تست اتصال API
+### Stop
 
 ```bash
-curl -i http://localhost:8081/healthz
+docker compose down
 ```
 
 ---
 
-# 📡 API Reference (نسخه اولیه)
+## Makefile Shortcuts
 
-## **Health**
-
-```
-GET /healthz
-```
-
----
-
-## **Todos**
-
-### ایجاد TODO
-
-```
-POST /todos
-Content-Type: application/json
-
-{
-  "title": "Buy milk",
-  "description": "2 boxes"
-}
-```
-
-### دریافت لیست TODOها
-
-```
-GET /todos
-```
-
-### به‌روزرسانی
-
-```
-PUT /todos/{id}
-```
-
-### حذف
-
-```
-DELETE /todos/{id}
+```bash
+make up          # docker compose up --build
+make down        # docker compose down
+make logs        # docker logs -f <container>
+make fmt         # go fmt ...
+make tidy        # go mod tidy
 ```
 
 ---
 
-# 🌐 Network Diagram (Dockerized)
+## Health Check
 
+```bash
+curl http://localhost:8080/health
 ```
-               ┌────────────────────────┐
-               │   Host Machine (WSL)   │
-               └─────────────┬──────────┘
-                             │
-                             ▼
-            ┌────────────────────────────────┐
-            │     Docker Internal Network     │
-            └────────────────┬────────────────┘
-                             │
-          ┌──────────────────┼──────────────────┐
-          ▼                  ▼                  ▼
- ┌────────────────┐  ┌─────────────────┐  ┌────────────────┐
- │ secure-todo-api│  │ secure-todo-redis│ │secure-todo-postgres│
- │ Port: 8081      │ │ Port: 6379       │ │ Port: 5432          │
- │ Talks via DNS   │ │ Cache Layer       │ │ Main DB             │
- └────────────────┘ └─────────────────┘ └──────────────────┘
+
+Response:
+
+```json
+{ "status": "ok" }
 ```
 
 ---
 
-# 🛡 Security Policies
+## GitFlow Rules
 
-### ✔ ورودی‌ها کاملاً ولیدیشن شده
+* **never** commit directly to `develop` یا `main`
+* هر ویژگی جدید:
 
-هیچ ورودی بدون Validation وارد لایه سرویس یا دیتابیس نمی‌شود.
-
-### ✔ استفاده از GORM با تنظیمات امن
-
-* جلوگیری از SQL injection
-* جلوگیری از AutoMigrate ناخواسته
-* محدودیت در Preloadها
-
-### ✔ جلوگیری از نشت Error
-
-فقط پیام‌های عمومی → لاگ جزئیات در فایل داخلی.
-
-### ✔ مدیریت Secrets
-
-* Secretها فقط داخل env
-* هیچ‌چیزی hard-coded نیست
-
-### ✔ Rate-limit امن با Redis
-
-Requestهای بیش‌از‌حد → 429
-
-### ✔ JWT امن
-
-* HS256
-* مدت انقضا قابل تنظیم
-* جلوگیری از Reuse Token
-
-### ✔ Dependency Scanning
-
-قبل از هر merge:
-
-```
-trivy fs .
-govulncheck ./...
-golangci-lint run
+```bash
+git checkout develop
+git pull
+git checkout -b feature/<name>
 ```
 
----
+بعد از اتمام:
 
-# 🧪 Development Workflow (استاندارد GitHub)
-
-```
-git checkout -b feature/some-feature
-git commit -m "feat: add X"
-golangci-lint run
-go test ./...
-trivy fs .
-govulncheck ./...
-docker compose -f docker-compose.dev.yml up --build
+```bash
+git checkout develop
+git merge --no-ff feature/<name>
 git push
-Create Pull Request
+git branch -d feature/<name>
+git push origin --delete feature/<name>
 ```
 
 ---
 
-# 🧪 اجرای تست‌ها
+## Dockerfile
 
-```bash
-go test ./... -cover
+```dockerfile
+FROM golang:1.22 AS builder
+
+WORKDIR /app
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o secure-todo ./cmd/main.go
+
+FROM alpine:3.19
+WORKDIR /app
+
+COPY --from=builder /app/secure-todo .
+COPY .env .env
+
+EXPOSE 8080
+CMD ["./secure-todo"]
 ```
 
 ---
 
-# 📌 TODOهای پروژه
+## docker-compose.yml
 
-* اضافه کردن Swagger (OpenAPI 3.1)
-* اضافه کردن Migrationها (golang-migrate)
-* CI/CD کامل با GitHub Actions (Lint + Security Scan + Tests + Build)
-* اضافه کردن Auth کامل با Refresh Token
-* Integration Tests با Postgres واقعی
+```yaml
+version: '3.9'
+
+services:
+  app:
+    build: .
+    container_name: secure-todo-app
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    restart: always
+
+  db:
+    image: postgres:15
+    container_name: secure-todo-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: secure_todo
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7
+    container_name: secure-todo-redis
+    ports:
+      - "6379:6379"
+```
 
 ---
 
-# 📜 License
+## License
 
-MIT License – Free to use & modify.
-
-```
-
-
-
-
-```
+MIT License.
