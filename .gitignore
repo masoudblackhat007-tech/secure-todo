@@ -1,0 +1,29 @@
+# Go build
+/bin/
+/dist/
+/build/
+/coverage/
+/tmp/
+
+# Logs
+*.log
+logs/
+
+# Env files
+.env
+.env.*
+*.env
+
+# Dumps / DB backups
+*.sql
+*.dump
+dump/
+dumps/
+
+# IDE / editor
+.idea/
+.vscode/
+*.swp
+
+# Vendor (if used)
+vendor/
