@@ -3,33 +3,19 @@ package main
 import (
 	"log"
 	"net/http"
+
+	"github.com/masoudblackhat007-tech/secure-todo/internal/config"
+	apphttp "github.com/masoudblackhat007-tech/secure-todo/internal/http"
 )
 
-func healthHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("health check requested") // تغییر کوچک برای commit
-
-	if r.Method != http.MethodGet {
-		w.WriteHeader(http.StatusMethodNotAllowed)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	_, err := w.Write([]byte(`{"status":"ok"}`))
-	if err != nil {
-		log.Printf("write response error: %v", err)
-	}
-}
-
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("/healthz", healthHandler)
+	cfg := config.Load()
 
-	addr := ":8081"
-	log.Printf("starting server on %s", addr)
+	mux := apphttp.NewMux()
 
-	if err := http.ListenAndServe(addr, mux); err != nil {
-		log.Fatalf("server failed: %v", err)
+	log.Printf("starting secure-todo api on :%s\n", cfg.HTTPPort)
+
+	if err := http.ListenAndServe(":"+cfg.HTTPPort, mux); err != nil {
+		log.Fatalf("server exited: %v", err)
 	}
 }
