@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -203,6 +204,16 @@ func getRequiredEnv(key string) (string, error) {
 	return val, nil
 }
 
+// getEnvOrFatal is a convenience helper for places where you explicitly
+// want the process to exit on missing env. Prefer getRequiredEnv + error
+// propagation in library code.
+func getEnvOrFatal(key string) string {
+	val, err := getRequiredEnv(key)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return val
+}
 func parseIntEnv(key string) (int, error) {
 	raw, err := getRequiredEnv(key)
 	if err != nil {
