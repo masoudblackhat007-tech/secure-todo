@@ -1,3 +1,4 @@
+````md
 # Week 1 – App skeleton (api, config, domain, base layout)
 
 ## Scope
@@ -12,6 +13,7 @@ Initial application skeleton for secure-todo:
 * Deploy directory placeholders
 * Base directory layout for future components
 * Typed config module with env loading and validation
+* Logging module using zap
 * Placeholder files (no logic yet)
 * Verified successful build inside WSL
 * Draft PR opened
@@ -27,6 +29,7 @@ Initial application skeleton for secure-todo:
 * `59b306` – Initial app skeleton (api, config, domain, service, router)
 * `d08c4c` – Added base directory layout and placeholders
 * `7a7f1e` – Added typed config module with env loading and validation
+* `e510e0` – Added zap-based logging module and security logging policy
 
 ## Tasks done
 
@@ -51,7 +54,7 @@ Initial application skeleton for secure-todo:
 
 Created the following directories:
 
-```
+```text
 internal/config
 internal/domain
 internal/http/handler
@@ -61,7 +64,7 @@ internal/repository
 internal/store
 internal/logging
 pkg/utils
-```
+````
 
 Added placeholder files:
 
@@ -85,6 +88,7 @@ All placeholder files contain only a `package` declaration.
     * `RedisConfig` (Addr, Password, DB)
     * `JWTConfig` (Secret, AccessTokenTTL, RefreshTokenTTL, Issuer)
     * `Config` (Server, Database, Redis, JWT)
+
 * [x] Implemented `LoadConfig() (*Config, error)`:
 
     * Loads `.env.dev` automatically when `APP_ENV` is empty or `development`
@@ -94,36 +98,63 @@ All placeholder files contain only a `package` declaration.
         * `DB_DSN`, `DB_MAX_OPEN_CONNS`, `DB_MAX_IDLE_CONNS`, `DB_CONN_MAX_LIFETIME`
         * `REDIS_ADDR`, `REDIS_PASSWORD`, `REDIS_DB`
         * `JWT_SECRET`, `JWT_ACCESS_TTL`, `JWT_REFRESH_TTL`, `JWT_ISSUER`
+
 * [x] Added helpers for validation and parsing:
 
-    * `getRequiredEnv(key string) (string, error)` – fails if env is missing/empty
-    * `parseIntEnv(key string) (int, error)` – uses `strconv.Atoi`
-    * `parseDurationEnv(key string) (time.Duration, error)` – uses `time.ParseDuration`
+    * `getRequiredEnv(key string) (string, error)`
+    * `parseIntEnv(key string) (int, error)`
+    * `parseDurationEnv(key string) (time.Duration, error)`
+
 * [x] Enforced strict validation:
 
-    * `DB_DSN`, `JWT_SECRET`, `JWT_ACCESS_TTL`, `JWT_REFRESH_TTL`, `JWT_ISSUER`, server timeouts and DB limits must be present and valid
-    * Fails fast with clear error messages if env is missing or invalid (no default secrets)
+    * No defaults for secrets
+    * Required: `DB_DSN`, `JWT_SECRET`, `JWT_ACCESS_TTL`, `JWT_REFRESH_TTL`, `JWT_ISSUER`
+    * Required: DB connection limits and server timeouts
+
 * [x] Updated `cmd/api/main.go` to:
 
     * Call `config.LoadConfig()`
-    * Log port and environment: `starting secure-todo api on :<port> (env=<env>)`
+    * Log: `starting secure-todo api on :<port> (env=<env>)`
     * Use `cfg.Server.Port` for HTTP listen address
+
+### Logging module (zap-based)
+
+* [x] Added logging module in `internal/logging/logger.go` using `go.uber.org/zap`
+
+* [x] Implemented global logger:
+
+    * `Init(env string)`:
+
+        * production → `zap.NewProduction(zap.AddCaller())`
+        * non-production → `zap.NewDevelopment(zap.AddCaller())`
+        * returns error if initialization fails
+
+    * `L()`:
+
+        * returns initialized global logger
+        * panics if `Init` has not been called
+
+* [x] Logs contain `time`, `level`, `caller`, `msg`
+
+* [x] Added Security Logging Policy in `internal/logging/logger.go`:
+
+    * no secrets, passwords, tokens, API keys, or full DSNs in logs
+    * only non-sensitive metadata allowed (length, type, hashed identifiers)
 
 ### Sanity checks
 
 * [x] Ran `go mod tidy`
 * [x] Ran `go list ./...`
-* [x] Verified successful build with `go build ./cmd/api`
-* [x] Verified runtime config behavior with `go run ./cmd/api` and a valid `.env.dev`:
+* [x] Verified build with `go build ./cmd/api`
+* [x] Verified runtime config with valid `.env.dev`
+* [x] Verified failure modes:
 
-    * `APP_ENV=development`
-    * `SERVER_PORT=8082`
-    * Valid duration values for timeouts and TTLs
-    * Non-empty `DB_DSN` and `JWT_SECRET`
+    * missing `DB_DSN` → `missing required environment variable: DB_DSN`
+    * invalid duration → `invalid duration value for SERVER_READ_TIMEOUT: "xxx"`
 
 ## Current directory overview
 
-```
+```text
 cmd/api/main.go
 
 internal/
@@ -150,8 +181,6 @@ docs/progress/week1-app-skeleton.md
 
 ## How to verify
 
-Inside WSL, from repo root:
-
 ```bash
 cd ~/projects/secure-todo
 git checkout feature/week1-app-skeleton
@@ -160,31 +189,7 @@ go list ./...
 go build ./cmd/api
 ```
 
-With a valid `.env.dev`:
-
-```env
-APP_ENV=development
-
-SERVER_PORT=8082
-SERVER_READ_TIMEOUT=5s
-SERVER_WRITE_TIMEOUT=10s
-
-DB_DSN=postgres://user:pass@localhost:5432/secure_todo?sslmode=disable
-DB_MAX_OPEN_CONNS=10
-DB_MAX_IDLE_CONNS=5
-DB_CONN_MAX_LIFETIME=30m
-
-REDIS_ADDR=localhost:6379
-REDIS_PASSWORD=
-REDIS_DB=0
-
-JWT_SECRET=super-secret-key-change-this
-JWT_ACCESS_TTL=15m
-JWT_REFRESH_TTL=168h
-JWT_ISSUER=secure-todo-api
-```
-
-Run:
+Run with valid `.env.dev`:
 
 ```bash
 go run ./cmd/api
@@ -192,7 +197,10 @@ go run ./cmd/api
 
 Expected:
 
-* Log line: `starting secure-todo api on :8082 (env=development)`
-* No config/validation errors
-* All commands succeed with no errors
-* PR #2 contains all skeleton files, layout placeholders, config module changes, and this updated document
+* correct startup log line
+* no validation errors
+* successful run
+* all changes visible in PR #2
+
+```
+```
