@@ -18,7 +18,7 @@ Initial application skeleton for secure-todo:
 
 ### Key commit
 
-- SHA: 59b306   <!-- این رو بعداً با SHA واقعی خودت عوض کن -->
+- SHA: 59b306
 
 ## Tasks done
 
