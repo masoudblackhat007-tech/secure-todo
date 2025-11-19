@@ -1,4 +1,4 @@
-````md
+``md
 # Week 1 – App skeleton (api, config, domain, base layout)
 
 ## Scope
@@ -64,7 +64,7 @@ internal/repository
 internal/store
 internal/logging
 pkg/utils
-````
+```
 
 Added placeholder files:
 
