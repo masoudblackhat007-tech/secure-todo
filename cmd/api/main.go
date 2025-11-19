@@ -9,13 +9,18 @@ import (
 )
 
 func main() {
-	cfg := config.Load()
+	cfg, err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("failed to load config: %v", err)
+	}
 
 	mux := apphttp.NewMux()
 
-	log.Printf("starting secure-todo api on :%s\n", cfg.HTTPPort)
+	log.Printf("starting secure-todo api on :%s (env=%s)\n", cfg.Server.Port, cfg.Server.Env)
 
-	if err := http.ListenAndServe(":"+cfg.HTTPPort, mux); err != nil {
+	addr := ":" + cfg.Server.Port
+
+	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalf("server exited: %v", err)
 	}
 }
