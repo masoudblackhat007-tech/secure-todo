@@ -1,54 +1,54 @@
-``md
+````md
 # Week 1 – App skeleton (api, config, domain, base layout)
 
 ## Scope
 
 Initial application skeleton for secure-todo:
 
-* HTTP API entrypoint
-* Basic config layer
-* Todo domain model
-* Todo service layer
-* HTTP router layer
-* Deploy directory placeholders
-* Base directory layout for future components
-* Typed config module with env loading and validation
-* Logging module using zap
-* Placeholder files (no logic yet)
-* Verified successful build inside WSL
-* Draft PR opened
+- HTTP API entrypoint
+- Basic config layer
+- Todo domain model
+- Todo service layer
+- HTTP router layer
+- Deploy directory placeholders
+- Base directory layout for future components
+- Typed config module with env loading and validation
+- Logging module using zap
+- Placeholder files (no logic yet)
+- Verified successful build inside WSL
+- Draft PR opened
 
 ## Git evidence
 
-* Base branch: `develop`
-* Feature branch: `feature/week1-app-skeleton`
-* Pull Request: `#2 – Week 1 – App skeleton (api, config, domain)` (Draft)
+- Base branch: `develop`
+- Feature branch: `feature/week1-app-skeleton`
+- Pull Request: `#2 – Week 1 – App skeleton (api, config, domain)` (Draft)
 
 ### Key commits (milestones)
 
-* `59b306` – Initial app skeleton (api, config, domain, service, router)
-* `d08c4c` – Added base directory layout and placeholders
-* `7a7f1e` – Added typed config module with env loading and validation
-* `e510e0` – Added zap-based logging module and security logging policy
+- `59b306` – Initial app skeleton (api, config, domain, service, router)
+- `d08c4c` – Added base directory layout and placeholders
+- `7a7f1e` – Added typed config module with env loading and validation
+- `e510e0` – Added zap-based logging module and security logging policy
 
 ## Tasks done
 
 ### Git & branching
 
-* [x] Updated `develop` from origin inside WSL
-* [x] Created feature branch `feature/week1-app-skeleton`
-* [x] Ensured all development happens only inside WSL
-* [x] Opened Draft PR and added self-review
+- [x] Updated `develop` from origin inside WSL
+- [x] Created feature branch `feature/week1-app-skeleton`
+- [x] Ensured all development happens only inside WSL
+- [x] Opened Draft PR and added self-review
 
 ### App skeleton (initial code)
 
-* [x] Added Go application entrypoint in `cmd/api/main.go`
-* [x] Added initial config loader in `internal/config/config.go`
-* [x] Added domain entity in `internal/domain/todo.go`
-* [x] Added service layer skeleton in `internal/service/todo_service.go`
-* [x] Added initial HTTP router in `internal/http/router.go`
-* [x] Created `deploy/dev` and `deploy/prod` directories with `.gitkeep`
-* [x] Verified build with `go build ./cmd/api`
+- [x] Added Go application entrypoint in `cmd/api/main.go`
+- [x] Added initial config loader in `internal/config/config.go`
+- [x] Added domain entity in `internal/domain/todo.go`
+- [x] Added service layer skeleton in `internal/service/todo_service.go`
+- [x] Added initial HTTP router in `internal/http/router.go`
+- [x] Created `deploy/dev` and `deploy/prod` directories with `.gitkeep`
+- [x] Verified build with `go build ./cmd/api`
 
 ### Base directory layout (structure only)
 
@@ -64,7 +64,7 @@ internal/repository
 internal/store
 internal/logging
 pkg/utils
-```
+````
 
 Added placeholder files:
 
