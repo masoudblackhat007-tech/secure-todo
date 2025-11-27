@@ -5,7 +5,9 @@ import (
 	"net/http"
 
 	"github.com/masoudblackhat007-tech/secure-todo/internal/config"
-	apphttp "github.com/masoudblackhat007-tech/secure-todo/internal/http"
+	"github.com/masoudblackhat007-tech/secure-todo/internal/http/router"
+	"github.com/masoudblackhat007-tech/secure-todo/internal/logging"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -14,13 +16,24 @@ func main() {
 		log.Fatalf("failed to load config: %v", err)
 	}
 
-	mux := apphttp.NewMux()
+	// initialize logger (دو خروجی: logger و error)
+	logger, err := logging.Init(cfg.Server.Env)
+	if err != nil {
+		log.Fatalf("failed to init logger: %v", err)
+	}
 
-	log.Printf("starting secure-todo api on :%s (env=%s)\n", cfg.Server.Port, cfg.Server.Env)
+	// handler موقت برای /health تا وقتی که خودت handler واقعی بنویسی
+	healthHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("ok"))
+	})
+
+	r := router.NewRouter(logger, cfg, healthHandler)
 
 	addr := ":" + cfg.Server.Port
+	logger.Info("starting secure-todo api", zap.String("addr", addr))
 
-	if err := http.ListenAndServe(addr, mux); err != nil {
-		log.Fatalf("server exited: %v", err)
+	if err := http.ListenAndServe(addr, r); err != nil {
+		logger.Fatal("server exited", zap.Error(err))
 	}
 }
