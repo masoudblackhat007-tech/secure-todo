@@ -4,6 +4,7 @@
 /build/
 /coverage/
 /tmp/
+/api
 
 # Logs
 *.log
