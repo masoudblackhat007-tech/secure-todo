@@ -10,7 +10,7 @@ Initial application skeleton for secure-todo, including:
 * Todo service layer
 * HTTP router layer (Chi-based)
 * HTTP middlewares with security focus (headers, cache-control, CORS, logging, panic recovery)
-* Deploy directory placeholders
+* Deploy directory `placeholders`
 * Base directory layout for future components
 * Typed config module with env loading and validation
 * Logging module using zap with security logging policy
@@ -27,7 +27,9 @@ Initial application skeleton for secure-todo, including:
 * Pull Request: `#2 – Week 1 – App skeleton (api, config, domain)` (Draft)
 
 ### Key commits (milestones)
-
+* `55b0aec` – Initialize DB and Redis in store layer with validation
+* `a276136` – Add final `/healthz` handler with DB/Redis checks
+* `5bec2c7` – Rewrite `main.go` with graceful shutdown and dependency wiring
 * `59b3068` – Init Week 1 app skeleton (api, config, domain)
 * `d08c4ca` – Add base directory layout and placeholders
 * `7a7f1e4` – Add typed config module with env loading and validation
